@@ -1,0 +1,45 @@
+{
+  "compileOnSave": false,
+  "compilerOptions": {
+    "target": "ESNext",
+    "lib": [
+      "ES2017",
+      "ESNext.AsyncIterable"
+    ],
+    "typeRoots": [
+      "node_modules/@types"
+    ],
+    "allowSyntheticDefaultImports": true,
+    "experimentalDecorators": true,
+    "emitDecoratorMetadata": true,
+    "forceConsistentCasingInFileNames": true,
+    "moduleResolution": "node",
+    "noImplicitAny": true,
+    "isolatedModules": true,
+    "pretty": true,
+    "sourceMap": true,
+    "declaration": true,
+    "outDir": "dist",
+    "allowJs": false,
+    "noEmit": false,
+    "esModuleInterop": true,
+    "baseUrl": ".",
+    "importsNotUsedAsValues": "error",
+    "paths": {
+      "~/*": [
+        "src/*"
+      ],
+    }
+  },
+  "include": [
+    "src/**/*.ts",
+    "src/**/*.json",
+    ".env"
+  ],
+  "exclude": [
+    "node_modules",
+    "src/http",
+    "src/logs",
+    "src/tests"
+  ]
+}
