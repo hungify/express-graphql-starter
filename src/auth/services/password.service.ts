@@ -1,7 +1,7 @@
-import bcrypt from "bcryptjs";
+import bcrypt from 'bcryptjs';
 
 export class PasswordService {
-  constructor(private readonly saltOrRound: string| number) {}
+  constructor(private readonly saltOrRound: string | number) {}
 
   async hashed(password: string) {
     const hashedPassword = await bcrypt.hash(password, this.saltOrRound);

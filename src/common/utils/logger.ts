@@ -1,8 +1,10 @@
+import type { GraphQLRequestContext } from 'apollo-server-core';
 import { existsSync, mkdirSync } from 'fs';
+import type { GraphQLError } from 'graphql';
 import { join } from 'path';
 import winston from 'winston';
 import winstonDaily from 'winston-daily-rotate-file';
-import envConfig from '../../configs/env.config';
+import envConfig from '../configs/env.config';
 
 // logs dir
 const logDir: string = join(__dirname, envConfig.logDir);
@@ -58,22 +60,11 @@ logger.add(
   }),
 );
 
-export const responseLogger = (request: any) => {
+export const responseLogger = (request: GraphQLRequestContext<object>) => {
   const { query } = request.request;
-  // logger.info(query);
+  logger.info(query);
 };
 
-export const errorLogger = (error: any) => {
-  const { validationErrors } = error.extensions.exception;
-
-  let message = '';
-  if (validationErrors) {
-    message = validationErrors
-      .map((error: any) => Object.values(error.constraints))
-      .join(', ');
-  } else {
-    message = error.message;
-  }
-
-  logger.error(message);
+export const errorLogger = (error: GraphQLError) => {
+  logger.error(error.message);
 };

@@ -7,8 +7,8 @@ import {
   UnauthorizedException,
 } from '~/common/exceptions';
 import type { BaseResponse } from '~/common/models/base.model';
-import { dayToSeconds } from '~/common/utils/date.util';
-import { jwt } from '~/configs/env.config';
+import { dayToMilliSeconds } from '~/common/utils/date.util';
+import { jwt, nodeEnv } from '~/common/configs/env.config';
 import { User } from '~/user/typedefs/user.type';
 import type { LoginInput } from '../dtos/login.dto';
 import type { RegisterInput } from '../dtos/register.dto';
@@ -75,13 +75,9 @@ export class AuthService {
     const cookieOptions: CookieOptions = {
       httpOnly: true,
       sameSite: 'strict',
-      secure: true,
-      maxAge: 1000 * 60 * 60 * 24 * 7, // 7 years
-
-      // maxAge: dayToSeconds(jwt.refreshTokenExpiresIn),
-      // path: '/refresh-token',
+      secure: nodeEnv === 'production',
+      maxAge: dayToMilliSeconds(jwt.refreshTokenExpiresIn),
     };
-
     res.cookie('refreshToken', refreshToken, cookieOptions);
 
     return {
@@ -90,6 +86,55 @@ export class AuthService {
       statusCode: 200,
       status: true,
     };
+  }
+
+  async refreshToken(res: Response, req: Request): Promise<Token> {
+    try {
+      const refreshToken = req.cookies?.refreshToken;
+      if (!refreshToken)
+        throw new BadRequestException({
+          message: 'Refresh token is required',
+        });
+
+      const jwtService = new JwtService(jwt);
+      const { email } = await jwtService.verifyRefreshToken(refreshToken);
+
+      const foundUser = await User.findOne({ where: { email } });
+      if (!foundUser) {
+        throw new NotFoundException({
+          message: 'Not found user',
+        });
+      }
+
+      const newAccessToken = await jwtService.signInAccessToken(foundUser);
+      const newRefreshToken = await jwtService.signInRefreshToken(foundUser);
+
+      if (!newAccessToken || !newRefreshToken) {
+        throw new InternalServerException({
+          message: 'Error while generating tokens',
+        });
+      }
+
+      const cookieOptions: CookieOptions = {
+        httpOnly: true,
+        sameSite: true,
+        secure: nodeEnv === 'production', // True in production
+        maxAge: dayToMilliSeconds(jwt.refreshTokenExpiresIn),
+        path: '/',
+      };
+      res.cookie('refreshToken', newRefreshToken, cookieOptions);
+
+      return {
+        accessToken: newAccessToken,
+        message: 'success',
+        statusCode: 200,
+        status: true,
+      };
+    } catch (error) {
+      throw new InternalServerException({
+        message: 'Error while refreshing token',
+      });
+    }
   }
 
   async logout(req: Request, res: Response): Promise<BaseResponse> {
@@ -104,7 +149,7 @@ export class AuthService {
     if (!email) throw new UnauthorizedException({ message: 'Invalid refresh token' });
 
     const foundUser = await User.findOne({ where: { email } });
-    foundUser.tokenVersion += 1;
+    // foundUser.tokenVersion += 1;
     await foundUser.save();
     res.clearCookie('refreshToken');
     return {

@@ -1,4 +1,4 @@
-import { HttpException } from "./http.exception";
+import { HttpException } from './http.exception';
 
 export class BadRequestException extends HttpException {
   constructor(error: { message: string }) {

@@ -1,7 +1,7 @@
 import { Field, ObjectType, registerEnumType } from 'type-graphql';
 import { Column, Entity, PrimaryColumn } from 'typeorm';
 import { BaseModel } from '~/common/models/base.model';
-import { Roles } from '~/configs/role.config';
+import { Roles } from '~/common/configs/role.config';
 
 registerEnumType(Roles, {
   name: 'Role',

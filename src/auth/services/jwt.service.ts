@@ -1,6 +1,9 @@
 import JWT from 'jsonwebtoken';
 import { InternalServerException, UnauthorizedException } from '~/common/exceptions';
-import type { JwtPayloadContext, UserJwtPayload } from '~/common/interfaces/base.interface';
+import type {
+  JwtPayloadContext,
+  UserJwtPayload,
+} from '~/common/interfaces/base.interface';
 import type { JwtConfig } from '~/common/interfaces/config.interface';
 import type { User } from '~/user/typedefs/user.type';
 
@@ -29,7 +32,7 @@ export class JwtService {
     return refreshToken;
   }
 
-  verifyRefreshToken = async (token: string): Promise<JwtPayloadContext> => {
+  async verifyRefreshToken(token: string): Promise<JwtPayloadContext> {
     try {
       const secret = this.jwt.refreshTokenSecret;
       const payload = (await JWT.verify(token, secret)) as JwtPayloadContext;
@@ -49,9 +52,9 @@ export class JwtService {
         });
       }
     }
-  };
+  }
 
-  verifyAccessToken = async (token: string): Promise<JwtPayloadContext> => {
+  async verifyAccessToken(token: string): Promise<JwtPayloadContext> {
     try {
       const secret = this.jwt.accessTokenSecret;
       const payload = (await JWT.verify(token, secret)) as JwtPayloadContext;
@@ -59,7 +62,7 @@ export class JwtService {
     } catch (err) {
       if (err.name === 'TokenExpiredError') {
         throw new UnauthorizedException({
-          message: 'Refresh token has expired',
+          message: 'Access token has expired',
         });
       } else if (err.name === 'JsonWebTokenError') {
         throw new UnauthorizedException({
@@ -71,5 +74,5 @@ export class JwtService {
         });
       }
     }
-  };
+  }
 }

@@ -1,8 +1,6 @@
 import {
   ApolloServerPluginDrainHttpServer,
   ApolloServerPluginLandingPageGraphQLPlayground,
-  ApolloServerPluginLandingPageLocalDefault,
-  ApolloServerPluginLandingPageProductionDefault,
 } from 'apollo-server-core';
 import { ApolloServer } from 'apollo-server-express';
 import compression from 'compression';
@@ -14,13 +12,12 @@ import hpp from 'hpp';
 import { createServer } from 'http';
 import 'reflect-metadata';
 import { buildSchema } from 'type-graphql';
-import refreshTokenRoute from './auth/routes/auth';
 import type { BaseContext } from './common/interfaces/base.interface';
 import type { Resolvers } from './common/interfaces/resolvers.interface';
 import { errorMiddleware } from './common/middlewares';
 import { errorLogger, logger, responseLogger } from './common/utils/logger';
-import { nodeEnv } from './configs/env.config';
-import { connectionToPostgres } from './databases';
+import { nodeEnv } from './common/configs/env.config';
+import { connectionToPostgres } from './common/databases';
 
 const bootstrap = async (resolvers: Resolvers) => {
   await connectionToPostgres();
@@ -38,13 +35,12 @@ const bootstrap = async (resolvers: Resolvers) => {
     express.json(),
     express.urlencoded({ extended: true }),
     cors({
-      origin: ['https://studio.apollographql.com', 'http://localhost:4000'],
+      origin: ['https://studio.apollographql.com', 'http://localhost:3000'],
       credentials: true,
     }),
   ]);
 
   app.use(cookieParser());
-  app.use('/refresh-token', refreshTokenRoute);
 
   app.use(errorMiddleware);
 
@@ -78,7 +74,7 @@ const bootstrap = async (resolvers: Resolvers) => {
   apolloServer.applyMiddleware({
     app,
     cors: {
-      origin: ['https://studio.apollographql.com', 'http://localhost:4000'],
+      origin: ['https://studio.apollographql.com', 'http://localhost:3000'],
       credentials: true,
     },
   });

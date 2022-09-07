@@ -1,7 +1,7 @@
 import { Arg, Ctx, Mutation, Resolver } from 'type-graphql';
 import type { BaseContext } from '~/common/interfaces/base.interface';
 import { BaseResponse } from '~/common/models/base.model';
-import { jwt, saltOrRound } from '~/configs/env.config';
+import { jwt, saltOrRound } from '~/common/configs/env.config';
 import { LoginInput } from './dtos/login.dto';
 import { RegisterInput } from './dtos/register.dto';
 import { AuthService } from './services/auth.service';
@@ -27,9 +27,13 @@ export default class AuthResolver {
     return this.auth.login(data, res);
   }
 
-  // @UseMiddleware(checkAuth)
   @Mutation(() => BaseResponse)
   logout(@Ctx() { req, res }: BaseContext) {
     return this.auth.logout(req, res);
+  }
+
+  @Mutation(() => Auth)
+  refreshToken(@Ctx() { res, req }: BaseContext) {
+    return this.auth.refreshToken(res, req);
   }
 }

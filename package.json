@@ -8,8 +8,11 @@
     "dev": "cross-env NODE_ENV=development nodemon",
     "build": "rimraf ./dist &&  swc src -d dist --source-maps --copy-files",
     "build:tsc": "tsc && tsc-alias",
-    "lint": "eslint --ignore-path .gitignore --ext .ts src/",
-    "lint:fix": "npm run lint -- --fix"
+    "lint": "npx eslint src",
+    "lint:fix": "npm run lint -- --fix",
+    "prettier": "npx prettier src --check",
+    "prettier:fix": "npm run prettier -- --write",
+    "format": "npm run prettier:fix && npm run lint:fix"
   },
   "dependencies": {
     "apollo-server-core": "^3.10.1",
@@ -44,6 +47,8 @@
     "@types/jsonwebtoken": "^8.5.8",
     "@types/node": "^18.7.6",
     "@types/validator": "^13.7.5",
+    "@typescript-eslint/eslint-plugin": "^5.35.1",
+    "@typescript-eslint/parser": "^5.35.1",
     "cross-env": "^7.0.3",
     "eslint": "^8.20.0",
     "eslint-config-prettier": "^8.5.0",

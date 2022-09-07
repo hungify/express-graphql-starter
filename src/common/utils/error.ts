@@ -8,7 +8,6 @@ export const errorMiddleware = (
   res: Response,
   next: NextFunction,
 ) => {
-  console.log('zoo');
   try {
     const status: number = error.status || 500;
     const message: string = error.message || 'Something went wrong';

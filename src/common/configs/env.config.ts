@@ -1,4 +1,4 @@
-import dotenv from "dotenv";
+import dotenv from 'dotenv';
 
 dotenv.config();
 
@@ -25,18 +25,21 @@ export const jwt = {
 };
 
 export const postgres = {
-  host: process.env.DB_HOST,
-  port: Number(process.env.DB_PORT),
-  username: process.env.DB_USERNAME,
-  password: process.env.DB_PASSWORD,
-  database: process.env.DB_DATABASE,
+  host: process.env.POSTGRES_HOST,
+  port: Number(process.env.POSTGRES_PORT),
+  username: process.env.POSTGRES_USER,
+  password: process.env.POSTGRES_PASSWORD,
+  database: process.env.POSTGRES_DB,
 };
+
+// export const postgres = {
+// };
 
 export const port = process.env.PORT || process.env.APP_PORT;
 
-export const nodeEnv = process.env.NODE_ENV || "development";
+export const nodeEnv = process.env.NODE_ENV || 'development';
 
-export const logDir = process.env.LOG_DIR || "../logs";
+export const logDir = process.env.LOG_DIR || '../logs';
 
 export const saltOrRound = Number(process.env.SALT_OR_ROUND) || 10;
 

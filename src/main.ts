@@ -6,4 +6,6 @@ import UserResolver from './user/users.resolver';
 
 const resolvers: Resolvers = [AppResolver, UserResolver, AuthResolver];
 
-bootstrap(resolvers);
+bootstrap(resolvers).catch((err) => {
+  console.error(err);
+});
