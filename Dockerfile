@@ -1,23 +1,29 @@
-FROM node:16.0.0-alpine as common-build-state
+# Install dependencies only when needed
+FROM node:16.0.0-alpine as dependencies
 
-WORKDIR /app
+RUN mkdir -p /home/app
 
-COPY package*.json ./
+WORKDIR /home/app
 
-COPY . .
+RUN chown -R node:node /home/app
 
-RUN yarn
+USER node
 
-EXPOSE 4000
+COPY --chown=node:node package.json yarn.lock ./
 
-FROM common-build-state as development-build-state
+RUN yarn install --prod=false --silent --frozen-lockfile
+
+# Rebuild the source code only when needed
+FROM node:16.0.0-alpine as builder
+
+WORKDIR /home/app
 
 ENV NODE_ENV development
 
-CMD ["yarn", "run", "dev"]
+COPY --chown=node:node . .
 
-FROM common-build-state as production-build-state
+COPY --from=dependencies /home/app/node_modules ./node_modules
 
-ENV NODE_ENV production
+EXPOSE 8000
 
-CMD ["yarn", "run", "build"]
+CMD [ "yarn", "dev"]

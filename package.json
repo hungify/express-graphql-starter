@@ -4,8 +4,8 @@
   "main": "index.js",
   "license": "MIT",
   "scripts": {
-    "start": "npm run build && cross-env NODE_ENV=production node dist/server.js",
-    "dev": "cross-env NODE_ENV=development nodemon",
+    "start": "npm run build && node dist/server.js",
+    "dev": "nodemon",
     "build": "rimraf ./dist &&  swc src -d dist --source-maps --copy-files",
     "build:tsc": "tsc && tsc-alias",
     "lint": "npx eslint src",
@@ -49,7 +49,6 @@
     "@types/validator": "^13.7.5",
     "@typescript-eslint/eslint-plugin": "^5.35.1",
     "@typescript-eslint/parser": "^5.35.1",
-    "cross-env": "^7.0.3",
     "eslint": "^8.20.0",
     "eslint-config-prettier": "^8.5.0",
     "eslint-plugin-import": "^2.26.0",

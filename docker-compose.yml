@@ -5,12 +5,11 @@ services:
     container_name: graphql
     build:
       context: .
-      target: development-build-state
       dockerfile: Dockerfile
     volumes:
-      - .:/app
-      - /app/node_modules
-    command: yarn run dev
+      - .:/home/app
+      - /home/app/node_modules
+    command: yarn dev
     environment:
       - PORT=${PORT}
       - LOG_DIR=${LOG_DIR}
@@ -26,8 +25,11 @@ services:
       - ACCESS_TOKEN_EXPIRES_IN=${ACCESS_TOKEN_EXPIRES_IN}
       - REFRESH_TOKEN_SECRET=${REFRESH_TOKEN_SECRET}
       - REFRESH_TOKEN_EXPIRES_IN=${REFRESH_TOKEN_EXPIRES_IN}
+
+      - CHOKIDAR_USEPOLLING=true
     ports:
       - ${PORT}:${PORT}
+      - 9229:9229
     restart: unless-stopped
     links:
       - pg
