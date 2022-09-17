@@ -1,5 +1,5 @@
 # Install dependencies only when needed
-FROM node:16.0.0-alpine as dependencies
+FROM node:16.10.0-alpine as dependencies
 
 RUN mkdir -p /home/app
 
@@ -14,7 +14,7 @@ COPY --chown=node:node package.json yarn.lock ./
 RUN yarn install --prod=false --silent --frozen-lockfile
 
 # Rebuild the source code only when needed
-FROM node:16.0.0-alpine as builder
+FROM dependencies as builder
 
 WORKDIR /home/app
 
