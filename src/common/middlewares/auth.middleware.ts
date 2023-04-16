@@ -7,7 +7,6 @@ import type { BaseContext } from '../interfaces/base.interface';
 
 export const checkAuth: MiddlewareFn<BaseContext> = async ({ context }, next) => {
   try {
-    // authHeader here is "Bearer accessToken"
     const authHeader = context.req.header('Authorization');
     const accessToken = authHeader && authHeader.split(' ')[1];
     if (!accessToken) {

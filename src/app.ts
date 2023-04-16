@@ -1,8 +1,9 @@
+import { ApolloServer } from '@apollo/server';
+import { expressMiddleware } from '@apollo/server/express4';
 import {
-  ApolloServerPluginDrainHttpServer,
-  ApolloServerPluginLandingPageGraphQLPlayground,
-} from 'apollo-server-core';
-import { ApolloServer } from 'apollo-server-express';
+  ApolloServerPluginLandingPageLocalDefault,
+  ApolloServerPluginLandingPageProductionDefault,
+} from '@apollo/server/plugin/landingPage/default';
 import compression from 'compression';
 import cookieParser from 'cookie-parser';
 import cors from 'cors';
@@ -12,14 +13,14 @@ import hpp from 'hpp';
 import { createServer } from 'http';
 import 'reflect-metadata';
 import { buildSchema } from 'type-graphql';
-import type { BaseContext } from './common/interfaces/base.interface';
-import type { Resolvers } from './common/interfaces/resolvers.interface';
-import { errorMiddleware } from './common/middlewares';
-import { errorLogger, logger, responseLogger } from './common/utils/logger';
 import { nodeEnv } from './common/configs/env.config';
 import { connectionToPostgres } from './common/databases';
+import { errorMiddleware } from './common/middlewares';
+import { errorLogger, logger, responseLogger } from './common/utils/logger';
+import UserResolver from './user/users.resolver';
+import AuthResolver from './auth/auth.resolver';
 
-const bootstrap = async (resolvers: Resolvers) => {
+const bootstrap = async () => {
   await connectionToPostgres();
 
   const app = express();
@@ -30,15 +31,7 @@ const bootstrap = async (resolvers: Resolvers) => {
       helmet({ contentSecurityPolicy: false, crossOriginEmbedderPolicy: false }),
     );
   }
-  app.use([
-    compression(),
-    express.json(),
-    express.urlencoded({ extended: true }),
-    cors({
-      origin: ['https://studio.apollographql.com', 'http://localhost:3000'],
-      credentials: true,
-    }),
-  ]);
+  app.use([compression(), express.json(), express.urlencoded({ extended: true })]);
 
   app.use(cookieParser());
 
@@ -48,21 +41,24 @@ const bootstrap = async (resolvers: Resolvers) => {
 
   const apolloServer = new ApolloServer({
     schema: await buildSchema({
-      validate: false,
-      resolvers,
+      resolvers: [UserResolver, AuthResolver],
     }),
     plugins: [
-      // ApolloServerPluginLandingPageLocalDefault({ embed: true }),
-      ApolloServerPluginDrainHttpServer({ httpServer }),
-      ApolloServerPluginLandingPageGraphQLPlayground,
+      nodeEnv === 'production'
+        ? ApolloServerPluginLandingPageProductionDefault()
+        : ApolloServerPluginLandingPageLocalDefault({ embed: false }),
+      {
+        async requestDidStart() {
+          return {
+            async willSendResponse({ request }) {
+              responseLogger(request);
+            },
+          };
+        },
+      },
     ],
     csrfPrevention: true,
     cache: 'bounded',
-    context: ({ req, res }: BaseContext) => ({ req, res }),
-    formatResponse: (response, request) => {
-      responseLogger(request);
-      return response;
-    },
     formatError: (error) => {
       errorLogger(error);
       return error;
@@ -71,20 +67,20 @@ const bootstrap = async (resolvers: Resolvers) => {
 
   await apolloServer.start();
 
-  apolloServer.applyMiddleware({
-    app,
-    cors: {
+  app.use(
+    '/',
+    cors({
       origin: ['https://studio.apollographql.com', 'http://localhost:3000'],
       credentials: true,
-    },
-  });
+    }),
+    expressMiddleware(apolloServer, {
+      context: async ({ req, res }) => ({ req, res }),
+    }),
+  );
+
   const PORT = process.env.PORT || 4000;
 
-  await new Promise((resolve) =>
-    httpServer.listen({ port: PORT }, resolve as () => void),
-  );
-  app.use(apolloServer.getMiddleware());
-  app.use(errorMiddleware);
+  await new Promise<void>((resolve) => httpServer.listen({ port: 4000 }, resolve));
 
   logger.info(`=================================`);
   logger.info(`🚀 App listening on the port ${PORT}`);

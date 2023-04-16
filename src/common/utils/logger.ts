@@ -1,10 +1,11 @@
-import type { GraphQLRequestContext } from 'apollo-server-core';
 import { existsSync, mkdirSync } from 'fs';
-import type { GraphQLError } from 'graphql';
+import type { GraphQLFormattedError } from 'graphql';
 import { join } from 'path';
 import winston from 'winston';
 import winstonDaily from 'winston-daily-rotate-file';
 import envConfig from '../configs/env.config';
+import type { GraphQLRequest } from '@apollo/server';
+import type { VariableValues } from '@apollo/server/dist/esm/externalTypes/graphql';
 
 // logs dir
 const logDir: string = join(__dirname, envConfig.logDir);
@@ -60,11 +61,11 @@ logger.add(
   }),
 );
 
-export const responseLogger = (request: GraphQLRequestContext<object>) => {
-  const { query } = request.request;
+export const responseLogger = (request: GraphQLRequest<VariableValues>) => {
+  const { query } = request;
   logger.info(query);
 };
 
-export const errorLogger = (error: GraphQLError) => {
+export const errorLogger = (error: GraphQLFormattedError) => {
   logger.error(error.message);
 };

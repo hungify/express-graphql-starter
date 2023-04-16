@@ -9,7 +9,7 @@ RUN chown -R node:node /home/app
 
 USER node
 
-COPY --chown=node:node package.json yarn.lock ./
+COPY --chown=node:node package.json ./
 
 RUN yarn install --prod=false --silent --frozen-lockfile
 
