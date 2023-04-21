@@ -1,6 +1,6 @@
 import type { MiddlewareFn } from 'type-graphql';
 import { JwtService } from '~/auth/services/jwt.service';
-import { jwt } from '~/common/configs/env.config';
+import { jwt } from '~/common/utils/env.config';
 import { InternalServerException } from '../exceptions';
 import { UnauthorizedException } from '../exceptions/unauthorized.exception';
 import type { BaseContext } from '../interfaces/base.interface';

@@ -1,48 +1,31 @@
-import dotenv from 'dotenv';
+import z from 'zod';
 
-dotenv.config();
+const envVariables = z.object({
+  PORT: z.string(),
+  NODE_ENV: z.string(),
 
-export const redis = {
-  host: process.env.REDIS_HOST,
-  port: process.env.REDIS_PORT,
-  password: process.env.REDIS_PASSWORD,
-  expireIn: process.env.REDIS_EXPIRE_IN,
-  connectTimeout: process.env.REDIS_CONNECT_TIMEOUT,
-};
+  POSTGRES_HOST: z.string(),
+  POSTGRES_PORT: z.string(),
+  POSTGRES_USER: z.string(),
+  POSTGRES_PASSWORD: z.string(),
+  POSTGRES_DB: z.string(),
+  DATABASE_URL: z.string(),
 
-export const s3 = {
-  accessKeyId: process.env.S3_ACCESS_KEY_ID,
-  secretAccessKey: process.env.S3_SECRET_ACCESS_KEY,
-  region: process.env.S3_REGION_NAME,
-  bucket: process.env.S3_BUCKET_NAME,
-};
+  SALT_OR_ROUND: z.string(),
+  LOG_DIR: z.string(),
 
-export const jwt = {
-  accessTokenSecret: process.env.ACCESS_TOKEN_SECRET,
-  refreshTokenSecret: process.env.REFRESH_TOKEN_SECRET,
-  accessTokenExpiresIn: process.env.ACCESS_TOKEN_EXPIRES_IN,
-  refreshTokenExpiresIn: process.env.REFRESH_TOKEN_EXPIRES_IN,
-};
+  REDIS_HOST: z.string(),
+  REDIS_PORT: z.string(),
+  REDIS_PASSWORD: z.string(),
+  REDIS_EXPIRE_IN: z.string(),
+  REDIS_CONNECT_TIMEOUT: z.string(),
 
-export const postgres = {
-  host: process.env.POSTGRES_HOST,
-  port: Number(process.env.POSTGRES_PORT),
-  username: process.env.POSTGRES_USER,
-  password: process.env.POSTGRES_PASSWORD,
-  database: process.env.POSTGRES_DB,
-};
+  ACCESS_TOKEN_SECRET: z.string(),
+  ACCESS_TOKEN_EXPIRES_IN: z.string(),
+  REFRESH_TOKEN_SECRET: z.string(),
+  REFRESH_TOKEN_EXPIRES_IN: z.string(),
+});
 
-// export const postgres = {
-// };
+envVariables.parse(process.env);
 
-export const port = process.env.PORT || process.env.APP_PORT;
-
-export const nodeEnv = process.env.NODE_ENV || 'development';
-
-export const logDir = process.env.LOG_DIR || '../logs';
-
-export const saltOrRound = Number(process.env.SALT_OR_ROUND) || 10;
-
-const envConfig = { redis, s3, jwt, postgres, port, nodeEnv, logDir, saltOrRound };
-
-export default envConfig;
+export type EnvVariables = z.infer<typeof envVariables>;

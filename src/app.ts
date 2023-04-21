@@ -4,6 +4,7 @@ import {
   ApolloServerPluginLandingPageLocalDefault,
   ApolloServerPluginLandingPageProductionDefault,
 } from '@apollo/server/plugin/landingPage/default';
+import { resolvers } from '@generated/type-graphql';
 import compression from 'compression';
 import cookieParser from 'cookie-parser';
 import cors from 'cors';
@@ -13,38 +14,39 @@ import hpp from 'hpp';
 import { createServer } from 'http';
 import 'reflect-metadata';
 import { buildSchema } from 'type-graphql';
-import { nodeEnv } from './common/configs/env.config';
-import { connectionToPostgres } from './common/databases';
+import { errorLogger, logger, responseLogger } from '~/common/utils/logger';
 import { errorMiddleware } from './common/middlewares';
-import { errorLogger, logger, responseLogger } from './common/utils/logger';
-import UserResolver from './user/users.resolver';
-import AuthResolver from './auth/auth.resolver';
+import { appEnv } from './common/configs/env.config';
+
+console.log(process.env);
 
 const bootstrap = async () => {
-  await connectionToPostgres();
-
   const app = express();
 
-  if (nodeEnv === 'production') {
+  app.use([
+    compression(),
+    express.json(),
+    express.urlencoded({ extended: true }),
+    cookieParser(),
+    errorMiddleware,
+  ]);
+
+  if (appEnv('NODE_ENV') === 'production') {
     app.use(
       hpp(),
       helmet({ contentSecurityPolicy: false, crossOriginEmbedderPolicy: false }),
     );
   }
-  app.use([compression(), express.json(), express.urlencoded({ extended: true })]);
-
-  app.use(cookieParser());
-
-  app.use(errorMiddleware);
 
   const httpServer = createServer(app);
 
   const apolloServer = new ApolloServer({
     schema: await buildSchema({
-      resolvers: [UserResolver, AuthResolver],
+      resolvers,
+      validate: false,
     }),
     plugins: [
-      nodeEnv === 'production'
+      appEnv('NODE_ENV') === 'production'
         ? ApolloServerPluginLandingPageProductionDefault()
         : ApolloServerPluginLandingPageLocalDefault({ embed: false }),
       {
@@ -88,4 +90,4 @@ const bootstrap = async () => {
   logger.info(`=================================`);
 };
 
-export default bootstrap;
+bootstrap();

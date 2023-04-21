@@ -3,7 +3,7 @@ import type { GraphQLFormattedError } from 'graphql';
 import { join } from 'path';
 import winston from 'winston';
 import winstonDaily from 'winston-daily-rotate-file';
-import envConfig from '../configs/env.config';
+import envConfig from './env.config';
 import type { GraphQLRequest } from '@apollo/server';
 import type { VariableValues } from '@apollo/server/dist/esm/externalTypes/graphql';
 

@@ -3,7 +3,6 @@
   "compilerOptions": {
     "target": "ESNext",
     "lib": ["ES2017", "ESNext.AsyncIterable"],
-    "typeRoots": ["node_modules/@types"],
     "allowSyntheticDefaultImports": true,
     "experimentalDecorators": true,
     "emitDecoratorMetadata": true,
@@ -19,11 +18,9 @@
     "noEmit": false,
     "esModuleInterop": true,
     "baseUrl": ".",
-    "importsNotUsedAsValues": "error",
     "paths": {
       "~/*": ["src/*"]
     }
   },
-  "include": ["src/**/*.ts", "src/**/*.json", ".env", "src/env.d.ts"],
   "exclude": ["node_modules", "src/http", "src/logs", "src/tests"]
 }

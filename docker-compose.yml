@@ -1,42 +1,42 @@
 version: '3.7'
 
 services:
-  graphql-server:
-    container_name: graphql
-    build:
-      context: .
-      dockerfile: Dockerfile
-    volumes:
-      - .:/home/app
-      - /home/app/node_modules
-    command: yarn dev
-    environment:
-      - PORT=${PORT}
-      - LOG_DIR=${LOG_DIR}
-      - SALT_OR_ROUND=${SALT_OR_ROUND}
+  # graphql-server:
+  #   container_name: graphql
+  #   build:
+  #     context: .
+  #     dockerfile: Dockerfile
+  #   volumes:
+  #     - .:/home/app
+  #     - /home/app/node_modules
+  #   command: yarn dev
+  #   environment:
+  #     - PORT=${PORT}
+  #     - LOG_DIR=${LOG_DIR}
+  #     - SALT_OR_ROUND=${SALT_OR_ROUND}
 
-      - POSTGRES_HOST=${POSTGRES_HOST}
-      - POSTGRES_PORT=${POSTGRES_PORT}
-      - POSTGRES_USER=${POSTGRES_USER}
-      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
-      - POSTGRES_DB=${POSTGRES_DB}
+  #     - POSTGRES_HOST=${POSTGRES_HOST}
+  #     - POSTGRES_PORT=${POSTGRES_PORT}
+  #     - POSTGRES_USER=${POSTGRES_USER}
+  #     - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+  #     - POSTGRES_DB=${POSTGRES_DB}
 
-      - ACCESS_TOKEN_SECRET=${ACCESS_TOKEN_SECRET}
-      - ACCESS_TOKEN_EXPIRES_IN=${ACCESS_TOKEN_EXPIRES_IN}
-      - REFRESH_TOKEN_SECRET=${REFRESH_TOKEN_SECRET}
-      - REFRESH_TOKEN_EXPIRES_IN=${REFRESH_TOKEN_EXPIRES_IN}
+  #     - ACCESS_TOKEN_SECRET=${ACCESS_TOKEN_SECRET}
+  #     - ACCESS_TOKEN_EXPIRES_IN=${ACCESS_TOKEN_EXPIRES_IN}
+  #     - REFRESH_TOKEN_SECRET=${REFRESH_TOKEN_SECRET}
+  #     - REFRESH_TOKEN_EXPIRES_IN=${REFRESH_TOKEN_EXPIRES_IN}
 
-      - CHOKIDAR_USEPOLLING=true
-    ports:
-      - ${PORT}:${PORT}
-      - 9229:9229
-    restart: unless-stopped
-    links:
-      - pg
-    depends_on:
-      - pg
-    networks:
-      - postgres
+  #     - CHOKIDAR_USEPOLLING=true
+  #   ports:
+  #     - ${PORT}:${PORT}
+  #     - 9229:9229
+  #   restart: unless-stopped
+  #   links:
+  #     - pg
+  #   depends_on:
+  #     - pg
+  #   networks:
+  #     - postgres
 
   pg:
     image: postgres:14-alpine

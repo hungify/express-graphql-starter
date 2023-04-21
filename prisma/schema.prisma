@@ -1,0 +1,29 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+generator typegraphql {
+  provider = "typegraphql-prisma"
+  // output              = "../prisma/generated/type-graphql"
+  // formatGeneratedCode = false
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum UserKind {
+  NORMAL
+  ADMIN
+}
+
+model User {
+  id    String   @id @unique @default(cuid())
+  email String   @unique
+  age   Int?
+  kind  UserKind
+}
