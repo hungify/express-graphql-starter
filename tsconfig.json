@@ -1,8 +1,9 @@
 {
   "compileOnSave": false,
   "compilerOptions": {
-    "target": "ESNext",
-    "lib": ["ES2017", "ESNext.AsyncIterable"],
+    "module": "CommonJS",
+    "target": "ES2018",
+    "lib": ["ES2018", "ESNext.AsyncIterable"],
     "allowSyntheticDefaultImports": true,
     "experimentalDecorators": true,
     "emitDecoratorMetadata": true,

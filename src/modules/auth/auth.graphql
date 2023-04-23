@@ -1,0 +1,8 @@
+type Token {
+  accessToken: String!
+}
+
+extend type Mutation {
+  login(email: String!, password: String!): Token!
+  register(email: String!, password: String!, fullName: String!): Message!
+}

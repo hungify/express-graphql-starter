@@ -1,0 +1,19 @@
+# Base Types
+scalar Date
+scalar DateTime
+scalar Time
+scalar EmailAddress
+scalar URL
+scalar UUID
+
+# Custom Types
+type Message {
+  message: String!
+}
+
+# Root Query
+type Query {
+  hi: String!
+}
+
+type Mutation
