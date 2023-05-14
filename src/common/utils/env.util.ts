@@ -34,6 +34,15 @@ const envSchema = z.object({
   refreshTokenSecret: z.string().nonempty(),
   refreshTokenExpiresIn: z.string().nonempty(),
 
+  verifyEmailTokenSecret: z.string().nonempty(),
+  verifyEmailTokenExpiresIn: z.string().nonempty(),
+
+  changeEmailTokenSecret: z.string().nonempty(),
+  changeEmailTokenExpiresIn: z.string().nonempty(),
+
+  changePasswordTokenSecret: z.string().nonempty(),
+  changePasswordTokenExpiresIn: z.string().nonempty(),
+
   // REDIS
   redisHost: z.string().nonempty(),
   redisPort: z.string().nonempty(),
@@ -85,6 +94,15 @@ export const envVariables = {
   accessTokenExpiresIn: process.env.ACCESS_TOKEN_EXPIRES_IN,
   refreshTokenSecret: process.env.REFRESH_TOKEN_SECRET,
   refreshTokenExpiresIn: process.env.REFRESH_TOKEN_EXPIRES_IN,
+
+  verifyEmailTokenSecret: process.env.VERIFY_EMAIL_TOKEN_SECRET,
+  verifyEmailTokenExpiresIn: process.env.VERIFY_EMAIL_TOKEN_EXPIRES_IN,
+
+  changeEmailTokenSecret: process.env.CHANGE_EMAIL_TOKEN_SECRET,
+  changeEmailTokenExpiresIn: process.env.CHANGE_EMAIL_TOKEN_EXPIRES_IN,
+
+  changePasswordTokenSecret: process.env.CHANGE_PASSWORD_TOKEN_SECRET,
+  changePasswordTokenExpiresIn: process.env.CHANGE_PASSWORD_TOKEN_EXPIRES_IN,
 
   // REDIS
   redisHost: process.env.REDIS_HOST,

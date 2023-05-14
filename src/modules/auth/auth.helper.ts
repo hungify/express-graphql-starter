@@ -2,54 +2,34 @@ import { CookieOptions, Response } from 'express';
 import { GraphQLError } from 'graphql';
 import jwt from 'jsonwebtoken';
 import ms from 'ms';
+import { EnvVariables, envVariables } from '~/common/utils/env.util';
+import { userRepository } from '../user/user.repository';
 import { TokenType, UserPayload } from './auth.interface';
-import { User } from '@prisma/client';
 import { emailService } from './email.service';
-import { envVariables } from '~/common/utils/env.util';
 
-const jwtSecret = (type: TokenType) => {
-  const { accessTokenSecret, refreshTokenSecret } = envVariables;
+class AuthHelper {
+  private jwtSecret(type: TokenType): EnvVariables[`${TokenType}Secret`] {
+    return envVariables[`${type}Secret`];
+  }
 
-  const secret = type === 'accessToken' ? accessTokenSecret : refreshTokenSecret;
-  return secret;
-};
+  private jwtExpiresIn(type: TokenType): EnvVariables[`${TokenType}ExpiresIn`] {
+    return envVariables[`${type}ExpiresIn`];
+  }
 
-const jwtExpiresIn = (type: TokenType) => {
-  const { accessTokenExpiresIn, refreshTokenExpiresIn } = envVariables;
-
-  const expiresIn = type === 'accessToken' ? accessTokenExpiresIn : refreshTokenExpiresIn;
-  return expiresIn;
-};
-
-const signInToken = (payload: UserPayload | string, type: TokenType) => {
-  const expiresIn = jwtExpiresIn(type);
-  const secret = jwtSecret(type);
-
-  return jwt.sign(payload, secret, {
-    expiresIn,
-  });
-};
-
-export const authHelper = {
-  sendVerifyEmail(email: string, token: string) {
-    const { baseClientUrl } = envVariables;
-    const verifyUrl = `${baseClientUrl}/auth/verify?token=${token}&email=${email}`;
-
-    return emailService.sendEmail({
-      verifyUrl,
-      email,
-      subject: 'Verify your email',
-      type: 'register',
+  signInToken(payload: UserPayload | string, type: TokenType) {
+    const expiresIn = this.jwtExpiresIn(type);
+    const secret = this.jwtSecret(type);
+    return jwt.sign(payload, secret, {
+      expiresIn,
     });
-  },
-  getUserFromPayload(user: User): UserPayload {
-    return {
-      email: user.email,
-      isVerified: user.isVerified,
-      role: user.role,
-      id: user.id,
-    };
-  },
+  }
+
+  async getUserFromToken(token: string): Promise<UserPayload | null> {
+    if (!token) return null;
+    const payload = this.verifyToken(token, 'accessToken');
+    const user = await userRepository.findUniqueByEmail(payload.email);
+    return user;
+  }
 
   async signInTokenAndSetCookie(payload: UserPayload, res: Response) {
     const { nodeEnv, refreshTokenExpiresIn } = envVariables;
@@ -64,8 +44,8 @@ export const authHelper = {
 
     try {
       const [accessToken, refreshToken] = await Promise.all([
-        signInToken(payload, 'accessToken'),
-        signInToken(payload, 'refreshToken'),
+        this.signInToken(payload, 'accessToken'),
+        this.signInToken(payload, 'refreshToken'),
       ]);
       res.cookie('refreshToken', refreshToken, cookieOptions);
 
@@ -75,10 +55,10 @@ export const authHelper = {
         throw new GraphQLError(error.message);
       }
     }
-  },
+  }
   verifyToken(token: string, type: TokenType) {
     try {
-      const secret = jwtSecret(type);
+      const secret = this.jwtSecret(type);
       const payload = jwt.verify(token, secret) as UserPayload;
       return payload;
     } catch (error) {
@@ -89,5 +69,18 @@ export const authHelper = {
         else throw new GraphQLError(error.message);
       }
     }
-  },
-};
+  }
+  sendVerifyEmail(email: string, token: string) {
+    const { baseClientUrl } = envVariables;
+    const verifyUrl = `${baseClientUrl}/auth/verify?token=${token}`;
+
+    return emailService.sendEmail({
+      verifyUrl,
+      email,
+      subject: 'Verify your email',
+      type: 'register',
+    });
+  }
+}
+
+export const authHelper = new AuthHelper();

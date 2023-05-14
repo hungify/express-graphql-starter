@@ -45,5 +45,24 @@ export const userRepository = {
       },
     });
   },
-  prisma,
+  updatePassword: (email: string, password: string) => {
+    return prisma.user.update({
+      where: {
+        email,
+      },
+      data: {
+        password,
+      },
+    });
+  },
+  updateEmail: (email: string, newEmail: string) => {
+    return prisma.user.update({
+      where: {
+        email,
+      },
+      data: {
+        email: newEmail,
+      },
+    });
+  },
 };

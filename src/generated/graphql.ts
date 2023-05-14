@@ -27,8 +27,43 @@ export type Message = {
 
 export type Mutation = {
   __typename?: 'Mutation';
+  autoLogin: Token;
+  changeEmail: Message;
+  changeEmailRequest: Message;
+  changePassword: Message;
+  forgotPassword: Message;
   login: Token;
   register: Message;
+  resetPassword: Message;
+  sendVerificationEmail: Message;
+  verifyEmail: Message;
+};
+
+
+export type MutationAutoLoginArgs = {
+  userId: Scalars['String'];
+};
+
+
+export type MutationChangeEmailArgs = {
+  token: Scalars['String'];
+};
+
+
+export type MutationChangeEmailRequestArgs = {
+  email: Scalars['String'];
+};
+
+
+export type MutationChangePasswordArgs = {
+  confirmPassword: Scalars['String'];
+  newPassword: Scalars['String'];
+  oldPassword: Scalars['String'];
+};
+
+
+export type MutationForgotPasswordArgs = {
+  email: Scalars['String'];
 };
 
 
@@ -44,10 +79,33 @@ export type MutationRegisterArgs = {
   password: Scalars['String'];
 };
 
+
+export type MutationResetPasswordArgs = {
+  confirmPassword: Scalars['String'];
+  password: Scalars['String'];
+  token: Scalars['String'];
+};
+
+
+export type MutationSendVerificationEmailArgs = {
+  email: Scalars['String'];
+};
+
+
+export type MutationVerifyEmailArgs = {
+  token: Scalars['String'];
+};
+
 export type Query = {
   __typename?: 'Query';
   hi: Scalars['String'];
+  me?: Maybe<User>;
 };
+
+export enum Role {
+  Admin = 'ADMIN',
+  User = 'USER'
+}
 
 export type Token = {
   __typename?: 'Token';
@@ -60,6 +118,7 @@ export type User = {
   fullName: Scalars['String'];
   id: Scalars['String'];
   password: Scalars['String'];
+  role: Role;
 };
 
 
@@ -140,6 +199,7 @@ export type ResolversTypes = {
   Message: ResolverTypeWrapper<Message>;
   Mutation: ResolverTypeWrapper<{}>;
   Query: ResolverTypeWrapper<{}>;
+  Role: Role;
   String: ResolverTypeWrapper<Scalars['String']>;
   Time: ResolverTypeWrapper<Scalars['Time']>;
   Token: ResolverTypeWrapper<Token>;
@@ -165,6 +225,12 @@ export type ResolversParentTypes = {
   User: User;
 };
 
+export type RoleDirectiveArgs = {
+  requires?: Maybe<Role>;
+};
+
+export type RoleDirectiveResolver<Result, Parent, ContextType = any, Args = RoleDirectiveArgs> = DirectiveResolverFn<Result, Parent, ContextType, Args>;
+
 export interface DateScalarConfig extends GraphQLScalarTypeConfig<ResolversTypes['Date'], any> {
   name: 'Date';
 }
@@ -183,12 +249,21 @@ export type MessageResolvers<ContextType = any, ParentType extends ResolversPare
 };
 
 export type MutationResolvers<ContextType = any, ParentType extends ResolversParentTypes['Mutation'] = ResolversParentTypes['Mutation']> = {
+  autoLogin?: Resolver<ResolversTypes['Token'], ParentType, ContextType, RequireFields<MutationAutoLoginArgs, 'userId'>>;
+  changeEmail?: Resolver<ResolversTypes['Message'], ParentType, ContextType, RequireFields<MutationChangeEmailArgs, 'token'>>;
+  changeEmailRequest?: Resolver<ResolversTypes['Message'], ParentType, ContextType, RequireFields<MutationChangeEmailRequestArgs, 'email'>>;
+  changePassword?: Resolver<ResolversTypes['Message'], ParentType, ContextType, RequireFields<MutationChangePasswordArgs, 'confirmPassword' | 'newPassword' | 'oldPassword'>>;
+  forgotPassword?: Resolver<ResolversTypes['Message'], ParentType, ContextType, RequireFields<MutationForgotPasswordArgs, 'email'>>;
   login?: Resolver<ResolversTypes['Token'], ParentType, ContextType, RequireFields<MutationLoginArgs, 'email' | 'password'>>;
   register?: Resolver<ResolversTypes['Message'], ParentType, ContextType, RequireFields<MutationRegisterArgs, 'email' | 'fullName' | 'password'>>;
+  resetPassword?: Resolver<ResolversTypes['Message'], ParentType, ContextType, RequireFields<MutationResetPasswordArgs, 'confirmPassword' | 'password' | 'token'>>;
+  sendVerificationEmail?: Resolver<ResolversTypes['Message'], ParentType, ContextType, RequireFields<MutationSendVerificationEmailArgs, 'email'>>;
+  verifyEmail?: Resolver<ResolversTypes['Message'], ParentType, ContextType, RequireFields<MutationVerifyEmailArgs, 'token'>>;
 };
 
 export type QueryResolvers<ContextType = any, ParentType extends ResolversParentTypes['Query'] = ResolversParentTypes['Query']> = {
   hi?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  me?: Resolver<Maybe<ResolversTypes['User']>, ParentType, ContextType>;
 };
 
 export interface TimeScalarConfig extends GraphQLScalarTypeConfig<ResolversTypes['Time'], any> {
@@ -213,6 +288,7 @@ export type UserResolvers<ContextType = any, ParentType extends ResolversParentT
   fullName?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   id?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   password?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  role?: Resolver<ResolversTypes['Role'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
@@ -230,3 +306,6 @@ export type Resolvers<ContextType = any> = {
   User?: UserResolvers<ContextType>;
 };
 
+export type DirectiveResolvers<ContextType = any> = {
+  role?: RoleDirectiveResolver<any, any, ContextType>;
+};

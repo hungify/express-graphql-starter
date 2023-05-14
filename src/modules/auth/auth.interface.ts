@@ -1,8 +1,11 @@
 import { User } from '@prisma/client';
 import { JwtPayload } from 'jsonwebtoken';
 
-export type TokenType = 'accessToken' | 'refreshToken';
+export type TokenType =
+  | 'accessToken'
+  | 'refreshToken'
+  | 'verifyEmailToken'
+  | 'changeEmailToken'
+  | 'changePasswordToken';
 
-type UserToPayload = Pick<User, 'email' | 'isVerified' | 'role' | 'id'>;
-
-export interface UserPayload extends JwtPayload, UserToPayload {}
+export interface UserPayload extends JwtPayload, Omit<User, 'password'> {}
