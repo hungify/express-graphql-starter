@@ -33,7 +33,7 @@ const bootstrap = async () => {
     plugins: [
       envVariables.nodeEnv === 'production'
         ? ApolloServerPluginLandingPageProductionDefault()
-        : ApolloServerPluginLandingPageLocalDefault({ embed: true }),
+        : ApolloServerPluginLandingPageLocalDefault({ embed: false }),
       {
         async requestDidStart() {
           return {
@@ -55,7 +55,7 @@ const bootstrap = async () => {
   if (envVariables.nodeEnv === 'production') {
     app.use(
       hpp(),
-      helmet({ contentSecurityPolicy: false, crossOriginEmbedderPolicy: false }),
+      helmet({ contentSecurityPolicy: false, crossOriginEmbedderPolicy: true }),
     );
   }
 
@@ -73,7 +73,15 @@ const bootstrap = async () => {
 
   await apolloServer.start();
 
-  app.use(
+  app.get('/', (_, res) => {
+    return res.json({
+      message: "Welcome to the GraphQL API, let's go to the playground",
+      link: `http://localhost:${port}/graphql`,
+      version: '0.0.1',
+    });
+  });
+
+  app.get(
     '/graphql',
     expressMiddleware(apolloServer, {
       context: async ({ req, res }) => {
