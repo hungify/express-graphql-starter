@@ -6,6 +6,7 @@ import { makeExecutableSchema } from '@graphql-tools/schema';
 import { print } from 'graphql';
 import path from 'path';
 import { envVariables } from '~/common/utils/env.util';
+import { resolvers } from '@generated/type-graphql';
 
 export const loadResolversWithSchema = () => {
   const typeDefModulesPath = path.join(__dirname, '../modules/**/*.graphql');

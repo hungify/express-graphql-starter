@@ -3,7 +3,7 @@ import { rule } from 'graphql-shield';
 
 export const isAuthenticated = rule({ cache: 'contextual' })(async (_, __, ctx) => {
   if (!ctx.user) {
-    return new GraphQLError('Not authenticated');
+    return new GraphQLError('Unauthorized');
   }
   return true;
 });

@@ -9,10 +9,6 @@ generator client {
   provider = "prisma-client-js"
 }
 
-generator typegraphql {
-  provider = "typegraphql-prisma"
-}
-
 enum Role {
   ADMIN
   USER

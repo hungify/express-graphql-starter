@@ -10,21 +10,26 @@ import {
 } from './auth.dto';
 import { authHelper } from './auth.helper';
 import { passwordService } from './password.service';
-import { UserJwtPayload } from '~/common/interfaces/base.interface';
 import { userRepository } from '../user/user.repository';
+import { UserPayload } from './auth.interface';
 
 export const authService = {
   async register(input: RegisterInput) {
     const foundEmail = await userRepository.getByEmail(input.email);
     if (foundEmail) throw new GraphQLError('Email already exists');
 
+    const token = authHelper.signInToken(
+      {
+        email: input.email,
+      },
+      'verifyEmailToken',
+    );
+    const info = await authHelper.sendVerifyEmail(input.email, token);
+
+    if (info.accepted.length === 0) throw new GraphQLError('Email not sent');
+
     const newUser = await userRepository.create(input);
     Object.assign(newUser, { password: undefined });
-
-    const token = authHelper.signInToken(newUser.email, 'verifyEmailToken');
-    const info = await authHelper.sendVerifyEmail(newUser.email, token);
-
-    if (!info) throw new GraphQLError('Email not sent');
 
     return {
       message: 'Please check your email to verify your account',
@@ -51,7 +56,12 @@ export const authService = {
 
     if (foundUser.isVerified) throw new GraphQLError('Email already verified');
 
-    const token = authHelper.signInToken(foundUser.email, 'verifyEmailToken');
+    const token = authHelper.signInToken(
+      {
+        email: foundUser.email,
+      },
+      'verifyEmailToken',
+    );
     const info = await authHelper.sendVerifyEmail(email, token);
 
     if (!info) throw new GraphQLError('Email not sent');
@@ -64,7 +74,7 @@ export const authService = {
     const user = await userRepository.getByEmail(input.email);
     if (!user) throw new Error('User not found');
 
-    const isPasswordCorrect = passwordService.verify(input.password, user.password);
+    const isPasswordCorrect = await passwordService.verify(input.password, user.password);
     if (!isPasswordCorrect) {
       throw new Error('Password is incorrect');
     }
@@ -81,7 +91,12 @@ export const authService = {
     const user = await userRepository.getByEmail(email);
     if (!user) throw new Error('User not found');
 
-    const token = authHelper.signInToken(user.email, 'changePasswordToken');
+    const token = authHelper.signInToken(
+      {
+        email: user.email,
+      },
+      'changePasswordToken',
+    );
     const info = await authHelper.sendVerifyEmail(email, token);
 
     if (!info) throw new GraphQLError('Email not sent');
@@ -107,7 +122,7 @@ export const authService = {
       message: 'Reset password successfully',
     };
   },
-  async changePassword(args: ChangePasswordInput, user: UserJwtPayload) {
+  async changePassword(args: ChangePasswordInput, user: UserPayload) {
     const { oldPassword, newPassword } = args;
 
     const foundUser = await userRepository.getByEmail(user.email);
@@ -130,12 +145,17 @@ export const authService = {
       message: 'Change password successfully',
     };
   },
-  async changeEmailRequest(email: string, user: UserJwtPayload) {
+  async changeEmailRequest(email: string, user: UserPayload) {
     const foundUser = await userRepository.getByEmail(user.email);
 
     if (foundUser) throw new GraphQLError('Email already exists');
 
-    const accessToken = authHelper.signInToken(user.email, 'changeEmailToken');
+    const accessToken = authHelper.signInToken(
+      {
+        email: user.email,
+      },
+      'changeEmailToken',
+    );
     const info = await authHelper.sendVerifyEmail(email, accessToken);
 
     if (!info) throw new GraphQLError('Email not sent');

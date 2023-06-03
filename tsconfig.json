@@ -23,5 +23,5 @@
       "~/*": ["src/*"]
     }
   },
-  "exclude": ["node_modules", "src/http", "src/logs", "src/tests"]
+  "exclude": ["node_modules", "src/http", "src/logs", "src/tests", "dist"]
 }

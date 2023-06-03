@@ -8,6 +8,7 @@ export const passwordService = {
       salt: Buffer.alloc(Number(saltRounds)),
     });
   },
-  verify: (password: string, hashedPassword: string) =>
-    argon2.verify(hashedPassword, password),
+  verify: (password: string, hashedPassword: string) => {
+    return argon2.verify(hashedPassword, password);
+  },
 };

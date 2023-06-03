@@ -9,3 +9,6 @@ export type TokenType =
   | 'changePasswordToken';
 
 export interface UserPayload extends JwtPayload, Omit<User, 'password'> {}
+interface EmailPayload extends Pick<User, 'email'> {}
+
+export type AuthJwtPayload = UserPayload | EmailPayload;

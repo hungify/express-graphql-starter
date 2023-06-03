@@ -99,14 +99,15 @@ export type MutationVerifyEmailArgs = {
 export type Query = {
   __typename?: 'Query';
   hi: Scalars['String'];
-  me?: Maybe<User>;
+  me: User;
 };
 
-export enum Role {
-  Admin = 'ADMIN',
-  User = 'USER'
-}
+export const Role = {
+  Admin: 'ADMIN',
+  User: 'USER'
+} as const;
 
+export type Role = typeof Role[keyof typeof Role];
 export type Token = {
   __typename?: 'Token';
   accessToken: Scalars['String'];
@@ -117,7 +118,8 @@ export type User = {
   email: Scalars['String'];
   fullName: Scalars['String'];
   id: Scalars['String'];
-  password: Scalars['String'];
+  isVerified: Scalars['Boolean'];
+  password?: Maybe<Scalars['String']>;
   role: Role;
 };
 
@@ -225,12 +227,6 @@ export type ResolversParentTypes = {
   User: User;
 };
 
-export type RoleDirectiveArgs = {
-  requires?: Maybe<Role>;
-};
-
-export type RoleDirectiveResolver<Result, Parent, ContextType = any, Args = RoleDirectiveArgs> = DirectiveResolverFn<Result, Parent, ContextType, Args>;
-
 export interface DateScalarConfig extends GraphQLScalarTypeConfig<ResolversTypes['Date'], any> {
   name: 'Date';
 }
@@ -263,7 +259,7 @@ export type MutationResolvers<ContextType = any, ParentType extends ResolversPar
 
 export type QueryResolvers<ContextType = any, ParentType extends ResolversParentTypes['Query'] = ResolversParentTypes['Query']> = {
   hi?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
-  me?: Resolver<Maybe<ResolversTypes['User']>, ParentType, ContextType>;
+  me?: Resolver<ResolversTypes['User'], ParentType, ContextType>;
 };
 
 export interface TimeScalarConfig extends GraphQLScalarTypeConfig<ResolversTypes['Time'], any> {
@@ -287,7 +283,8 @@ export type UserResolvers<ContextType = any, ParentType extends ResolversParentT
   email?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   fullName?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   id?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
-  password?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  isVerified?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
+  password?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   role?: Resolver<ResolversTypes['Role'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
@@ -306,6 +303,3 @@ export type Resolvers<ContextType = any> = {
   User?: UserResolvers<ContextType>;
 };
 
-export type DirectiveResolvers<ContextType = any> = {
-  role?: RoleDirectiveResolver<any, any, ContextType>;
-};

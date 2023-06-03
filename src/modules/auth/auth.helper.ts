@@ -4,7 +4,7 @@ import jwt from 'jsonwebtoken';
 import ms from 'ms';
 import { EnvVariables, envVariables } from '~/common/utils/env.util';
 import { userRepository } from '../user/user.repository';
-import { TokenType, UserPayload } from './auth.interface';
+import { AuthJwtPayload, TokenType, UserPayload } from './auth.interface';
 import { emailService } from './email.service';
 
 class AuthHelper {
@@ -16,11 +16,11 @@ class AuthHelper {
     return envVariables[`${type}ExpiresIn`];
   }
 
-  signInToken(payload: UserPayload | string, type: TokenType) {
+  signInToken(payload: AuthJwtPayload, type: TokenType) {
     const expiresIn = this.jwtExpiresIn(type);
     const secret = this.jwtSecret(type);
     return jwt.sign(payload, secret, {
-      expiresIn,
+      expiresIn: ms(expiresIn),
     });
   }
 

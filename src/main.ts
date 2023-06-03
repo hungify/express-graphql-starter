@@ -19,21 +19,27 @@ import { envVariables, loadEnvVariables } from '~/common/utils/env.util';
 import { authHelper } from '~/modules/auth/auth.helper';
 import { permissions } from './app/app.permission';
 import { loadResolversWithSchema } from './app/app.schema';
+import { loadPrismaMiddlewares } from './common/middlewares';
 
 const bootstrap = async () => {
   loadEnvVariables();
+  loadPrismaMiddlewares();
   const app = express();
   const port = envVariables.port;
   const httpServer = createServer(app);
   const schema = loadResolversWithSchema();
+  const isProduction = envVariables.nodeEnv === 'production';
 
   const apolloServer = new ApolloServer<AppContext>({
     schema: applyMiddleware(schema, permissions),
-    introspection: envVariables.nodeEnv !== 'production',
+    introspection: !isProduction,
     plugins: [
-      envVariables.nodeEnv === 'production'
+      isProduction
         ? ApolloServerPluginLandingPageProductionDefault()
-        : ApolloServerPluginLandingPageLocalDefault({ embed: false }),
+        : ApolloServerPluginLandingPageLocalDefault({
+            embed: true,
+            includeCookies: true,
+          }),
       {
         async requestDidStart() {
           return {
@@ -52,7 +58,7 @@ const bootstrap = async () => {
     },
   });
 
-  if (envVariables.nodeEnv === 'production') {
+  if (isProduction) {
     app.use(
       hpp(),
       helmet({ contentSecurityPolicy: false, crossOriginEmbedderPolicy: true }),
@@ -68,7 +74,6 @@ const bootstrap = async () => {
       origin: envVariables.whitelistDomains,
       credentials: true,
     }),
-    // errorMiddleware,
   ]);
 
   await apolloServer.start();
@@ -81,7 +86,7 @@ const bootstrap = async () => {
     });
   });
 
-  app.get(
+  app.use(
     '/graphql',
     expressMiddleware(apolloServer, {
       context: async ({ req, res }) => {

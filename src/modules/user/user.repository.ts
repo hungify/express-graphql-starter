@@ -7,7 +7,7 @@ export const userRepository = {
       data,
     });
   },
-  findUniqueByEmailOrPassword: async (idOrEmail: string) => {
+  findUniqueByEmailOrId: (idOrEmail: string) => {
     return prisma.user.findFirst({
       where: {
         OR: [{ id: idOrEmail }, { email: idOrEmail }],

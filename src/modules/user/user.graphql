@@ -1,13 +1,12 @@
-directive @role(requires: Role = ADMIN) on OBJECT | FIELD_DEFINITION
-
 type User {
   id: String!
   fullName: String!
   email: String!
+  password: String
+  isVerified: Boolean!
   role: Role!
-  password: String! @role(requires: ADMIN)
 }
 
 extend type Query {
-  me: User
+  me: User!
 }
