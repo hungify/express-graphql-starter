@@ -12,4 +12,4 @@
 
 - Get the identifier of your Postgres container: `docker ps`
 - Print the IP address of this docker image using its identifier:
-  `Docker inspect Container ID | grep IPAddress`
+  `docker inspect container_id | grep IPAddress`

@@ -12,6 +12,7 @@ import { authHelper } from './auth.helper';
 import { passwordService } from './password.service';
 import { userRepository } from '../user/user.repository';
 import { UserPayload } from './auth.interface';
+import { userService } from '../user/user.service';
 
 export const authService = {
   async register(input: RegisterInput) {
@@ -28,7 +29,7 @@ export const authService = {
 
     if (info.accepted.length === 0) throw new GraphQLError('Email not sent');
 
-    const newUser = await userRepository.create(input);
+    const newUser = await userService.createUser(input);
     Object.assign(newUser, { password: undefined });
 
     return {

@@ -1,5 +1,6 @@
 import prisma from '~/common/utils/prisma.util';
 import { RegisterInput } from '../auth/auth.dto';
+import { ProfileInput } from './user.dto';
 
 export const userRepository = {
   create: (data: RegisterInput) => {
@@ -62,6 +63,18 @@ export const userRepository = {
       },
       data: {
         email: newEmail,
+      },
+    });
+  },
+  updateProfile: (id: string, profile: ProfileInput) => {
+    return prisma.user.update({
+      where: {
+        id,
+      },
+      data: {
+        profile: {
+          update: profile,
+        },
       },
     });
   },

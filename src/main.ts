@@ -90,11 +90,15 @@ const bootstrap = async () => {
     '/graphql',
     expressMiddleware(apolloServer, {
       context: async ({ req, res }) => {
-        const { authorization } = req.headers;
-        const token = authorization?.split(' ')[1];
-        const user = await authHelper.getUserFromToken(token);
+        try {
+          const { authorization } = req.headers;
+          const token = authorization?.split(' ')[1];
+          const user = await authHelper.getUserFromToken(token);
 
-        return { req, res, user };
+          return { req, res, user };
+        } catch (error) {
+          return { req, res, user: null };
+        }
       },
     }),
   );

@@ -1,10 +1,22 @@
+type Profile {
+  id: String!
+  bio: String
+  facebookUrl: String
+  twitterUrl: String
+  instagramUrl: String
+}
+
 type User {
   id: String!
-  fullName: String!
+  firstName: String!
+  lastName: String!
   email: String!
   password: String
   isVerified: Boolean!
   role: Role!
+  profile: Profile
+  following: [User!]
+  followers: [User!]
 }
 
 extend type Query {

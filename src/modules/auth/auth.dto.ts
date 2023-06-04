@@ -29,7 +29,12 @@ export class RegisterInput extends LoginInput {
   @IsNotEmpty()
   @IsString()
   @Field()
-  fullName: string;
+  firstName: string;
+
+  @IsNotEmpty()
+  @IsString()
+  @Field()
+  lastName: string;
 }
 
 @ObjectType()

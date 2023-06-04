@@ -1,5 +1,4 @@
 import { User } from '@prisma/client';
-import { JwtPayload } from 'jsonwebtoken';
 
 export type TokenType =
   | 'accessToken'
@@ -8,7 +7,8 @@ export type TokenType =
   | 'changeEmailToken'
   | 'changePasswordToken';
 
-export interface UserPayload extends JwtPayload, Omit<User, 'password'> {}
+export interface UserPayload extends Omit<User, 'password'> {}
+
 interface EmailPayload extends Pick<User, 'email'> {}
 
 export type AuthJwtPayload = UserPayload | EmailPayload;
