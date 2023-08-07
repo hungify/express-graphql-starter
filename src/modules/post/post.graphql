@@ -1,0 +1,103 @@
+enum Allow {
+  COMMENT
+  DUET
+  STITCH
+}
+
+enum View {
+  PUBLIC
+  PRIVATE
+  FRIENDS
+}
+
+type Music {
+  id: ID!
+  url: String!
+  name: String!
+  artist: String!
+}
+
+type Comment {
+  id: ID!
+  content: String!
+  author: User!
+  postId: String!
+}
+
+type Like {
+  id: ID!
+  author: User!
+  postId: String!
+}
+
+type Share {
+  id: ID!
+  author: User!
+  postId: String!
+}
+
+type Video {
+  id: ID!
+  videoUrl: String!
+  thumbnailUrl: String
+  music: Music
+}
+
+type Post {
+  id: ID!
+  caption: String!
+  user: User!
+  video: Video!
+
+  viewAs: View!
+  allow: [Allow!]!
+
+  isLiked: Boolean
+  isSaved: Boolean
+
+  comments: [Comment!]
+  likes: [Like!]
+  shares: [Share!]
+}
+
+input MusicInput {
+  url: String!
+  name: String!
+  artist: String!
+}
+
+input VideoInput {
+  videoUrl: String!
+  thumbnailUrl: String!
+  musicId: String!
+}
+
+input PostInput {
+  caption: String!
+  videoId: String!
+  viewAs: View!
+  allow: [Allow!]!
+}
+
+input UpdatePostInput {
+  caption: String
+  viewAs: View
+  allow: [Allow!]
+}
+
+extend type Query {
+  recommendedPosts: [Post!]
+}
+
+extend type Mutation {
+  createMusic(input: MusicInput!): Music!
+  createVideo(input: VideoInput!): Video!
+  createPost(input: PostInput!): Post!
+
+  updatePost(id: ID!, input: UpdatePostInput!): Post!
+  deletePost(id: ID!): Boolean!
+
+  likePost(id: ID!): Boolean!
+  savePost(id: ID!): Boolean!
+  sharePost(id: ID!): Boolean!
+}

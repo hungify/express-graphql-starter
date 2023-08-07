@@ -1,55 +1,55 @@
 version: '3.7'
 
 services:
-  graphql-server:
-    container_name: graphql
-    build:
-      context: .
-      dockerfile: Dockerfile
-    volumes:
-      - .:/home/app
-      - /home/app/node_modules
-    command: yarn dev
-    environment:
-      - PORT=${PORT}
-      - LOG_DIR=${LOG_DIR}
-      - SALT_OR_ROUND=${SALT_OR_ROUND}
+  # graphql-server:
+  #   container_name: graphql
+  #   build:
+  #     context: .
+  #     dockerfile: Dockerfile
+  #   volumes:
+  #     - .:/home/app
+  #     - /home/app/node_modules
+  #   command: yarn dev
+  #   environment:
+  #     - PORT=${PORT}
+  #     - LOG_DIR=${LOG_DIR}
+  #     - SALT_OR_ROUND=${SALT_OR_ROUND}
 
-      - POSTGRES_HOST=${POSTGRES_HOST}
-      - POSTGRES_PORT=${POSTGRES_PORT}
-      - POSTGRES_USER=${POSTGRES_USER}
-      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
-      - POSTGRES_DB=${POSTGRES_DB}
+  #     - POSTGRES_HOST=${DATABASE_HOST}
+  #     - POSTGRES_PORT=${DATABASE_PORT}
+  #     - POSTGRES_USER=${DATABASE_USER}
+  #     - POSTGRES_PASSWORD=${DATABASE_PASSWORD}
+  #     - POSTGRES_DB=${DATABASE_DB}
 
-      - ACCESS_TOKEN_SECRET=${ACCESS_TOKEN_SECRET}
-      - ACCESS_TOKEN_EXPIRES_IN=${ACCESS_TOKEN_EXPIRES_IN}
-      - REFRESH_TOKEN_SECRET=${REFRESH_TOKEN_SECRET}
-      - REFRESH_TOKEN_EXPIRES_IN=${REFRESH_TOKEN_EXPIRES_IN}
+  #     - ACCESS_TOKEN_SECRET=${ACCESS_TOKEN_SECRET}
+  #     - ACCESS_TOKEN_EXPIRES_IN=${ACCESS_TOKEN_EXPIRES_IN}
+  #     - REFRESH_TOKEN_SECRET=${REFRESH_TOKEN_SECRET}
+  #     - REFRESH_TOKEN_EXPIRES_IN=${REFRESH_TOKEN_EXPIRES_IN}
 
-      - CHOKIDAR_USEPOLLING=true
-    ports:
-      - ${PORT}:${PORT}
-      - 9229:9229
-    restart: unless-stopped
-    links:
-      - pg
-    depends_on:
-      - pg
-    networks:
-      - postgres
+  #     - CHOKIDAR_USEPOLLING=true
+  #   ports:
+  #     - ${PORT}:${PORT}
+  #     - 9229:9229
+  #   restart: unless-stopped
+  #   links:
+  #     - pg
+  #   depends_on:
+  #     - pg
+  #   networks:
+  #     - postgres
 
   pg:
     image: postgres:14-alpine
     restart: always
     container_name: postgres
     environment:
-      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
-      - POSTGRES_USER=${POSTGRES_USER}
-      - POSTGRES_DB=${POSTGRES_DB}
-      - POSTGRES_PORT=${POSTGRES_PORT}
-      - POSTGRES_HOST=${POSTGRES_HOST}
+      - POSTGRES_PASSWORD=${DATABASE_PASSWORD}
+      - POSTGRES_USER=${DATABASE_USER}
+      - POSTGRES_DB=${DATABASE_DB}
+      - POSTGRES_PORT=${DATABASE_PORT}
+      - POSTGRES_HOST=${DATABASE_HOST}
     ports:
-      - ${POSTGRES_PORT}:${POSTGRES_PORT}
+      - ${DATABASE_PORT}:${DATABASE_PORT}
     networks:
       - postgres
     volumes:
@@ -57,14 +57,14 @@ services:
 
   pgadmin:
     container_name: pgadmin
-    image: dpage/pgadmin4:6.18
+    image: dpage/pgadmin4:7.1
     restart: always
     environment:
       PGADMIN_DEFAULT_EMAIL: ${PGADMIN_DEFAULT_EMAIL:-admin@admin.com}
       PGADMIN_DEFAULT_PASSWORD: ${PGADMIN_DEFAULT_PASSWORD:-admin}
       PGADMIN_CONFIG_SERVER_MODE: 'False'
     ports:
-      - '${PGADMIN_PORT:-5000}:80'
+      - '5000:80'
     networks:
       - postgres
 

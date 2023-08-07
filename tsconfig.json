@@ -1,9 +1,9 @@
 {
   "compileOnSave": false,
   "compilerOptions": {
-    "target": "ESNext",
-    "lib": ["ES2017", "ESNext.AsyncIterable"],
-    "typeRoots": ["node_modules/@types"],
+    "module": "CommonJS",
+    "target": "ES2018",
+    "lib": ["ES2018", "ESNext.AsyncIterable"],
     "allowSyntheticDefaultImports": true,
     "experimentalDecorators": true,
     "emitDecoratorMetadata": true,
@@ -19,11 +19,9 @@
     "noEmit": false,
     "esModuleInterop": true,
     "baseUrl": ".",
-    "importsNotUsedAsValues": "error",
     "paths": {
       "~/*": ["src/*"]
     }
   },
-  "include": ["src/**/*.ts", "src/**/*.json", ".env", "src/env.d.ts"],
-  "exclude": ["node_modules", "src/http", "src/logs", "src/tests"]
+  "exclude": ["node_modules", "src/http", "src/logs", "src/tests", "dist"]
 }

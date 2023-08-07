@@ -1,23 +1,25 @@
 import { existsSync, mkdirSync } from 'fs';
 import type { GraphQLFormattedError } from 'graphql';
-import { join } from 'path';
+import path from 'path';
 import winston from 'winston';
 import winstonDaily from 'winston-daily-rotate-file';
-import envConfig from '../configs/env.config';
 import type { GraphQLRequest } from '@apollo/server';
-import type { VariableValues } from '@apollo/server/dist/esm/externalTypes/graphql';
+import { VariableValues } from '@apollo/server/dist/esm/externalTypes/graphql';
+import { envVariables } from './env.util';
 
-// logs dir
-const logDir: string = join(__dirname, envConfig.logDir);
+const logDir = path.join(__dirname, envVariables.loggerPath);
 
-if (!existsSync(logDir)) {
-  mkdirSync(logDir);
-}
-
-// Define log format
 const logFormat = winston.format.printf(
   ({ timestamp, level, message }) => `${timestamp} ${level}: ${message}`,
 );
+
+try {
+  if (!existsSync(logDir)) {
+    mkdirSync(logDir);
+  }
+} catch (error) {
+  console.error('Error creating logs directory:', error);
+}
 
 /*
  * Log Level
@@ -41,6 +43,7 @@ export const logger = winston.createLogger({
       json: false,
       zippedArchive: true,
     }),
+
     // error log setting
     new winstonDaily({
       level: 'error',

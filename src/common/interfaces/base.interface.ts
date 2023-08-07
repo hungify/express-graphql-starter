@@ -1,13 +1,8 @@
 import type { Request, Response } from 'express';
-import type Jwt from 'jsonwebtoken';
-import type { User } from '~/user/typedefs/user.type';
+import { UserPayload } from '~/modules/auth/auth.interface';
 
-export type UserJwtPayload = Pick<User, 'email'>;
-
-export type JwtPayloadContext = UserJwtPayload & Jwt.JwtPayload;
-
-export interface BaseContext {
+export interface AppContext {
   req: Request;
   res: Response;
-  user: UserJwtPayload;
+  user: UserPayload | null;
 }

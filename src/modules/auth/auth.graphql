@@ -1,0 +1,25 @@
+type Token {
+  accessToken: String!
+}
+
+extend type Mutation {
+  login(email: String!, password: String!): Token!
+  autoLogin(userId: String!): Token!
+  register(
+    email: String!
+    password: String!
+    firstName: String!
+    lastName: String!
+  ): Message!
+  verifyEmail(token: String!): Message!
+  forgotPassword(email: String!): Message!
+  sendVerificationEmail(email: String!): Message!
+  resetPassword(token: String!, password: String!, confirmPassword: String!): Message!
+  changePassword(
+    oldPassword: String!
+    newPassword: String!
+    confirmPassword: String!
+  ): Message!
+  changeEmailRequest(email: String!): Message!
+  changeEmail(token: String!): Message!
+}

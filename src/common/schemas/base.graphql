@@ -1,0 +1,24 @@
+# Base Types
+scalar Date
+scalar DateTime
+scalar Time
+scalar EmailAddress
+scalar URL
+scalar UUID
+
+# Root Query
+type Query {
+  hi: String!
+}
+
+type Mutation
+
+# Custom Types
+type Message {
+  message: String!
+}
+
+enum Role {
+  ADMIN
+  USER
+}
